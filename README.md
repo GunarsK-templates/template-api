@@ -1,4 +1,4 @@
-# Your Service API
+# Template API
 
 A Go REST API template using Gin framework with PostgreSQL.
 
@@ -12,12 +12,13 @@ A Go REST API template using Gin framework with PostgreSQL.
 - Docker support with multi-stage builds
 - CI/CD with GitHub Actions
 - Security scanning (govulncheck, gosec, Trivy)
+- Unit tests with table-driven patterns
 
 ## Getting Started
 
 ### Prerequisites
 
-- Go 1.23+
+- Go 1.25+
 - PostgreSQL 15+
 - [Task](https://taskfile.dev/) (optional, for task runner)
 
@@ -25,8 +26,8 @@ A Go REST API template using Gin framework with PostgreSQL.
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/your-org/your-service.git
-cd your-service
+git clone https://github.com/GunarsK-templates/template-api.git
+cd template-api
 ```
 
 2. Copy environment file:
@@ -74,7 +75,11 @@ task run
 │       └── main.go          # Application entry point
 ├── internal/
 │   ├── config/
-│   │   └── config.go        # Configuration loading
+│   │   ├── config.go        # Main config (combines sub-configs)
+│   │   ├── service.go       # Service configuration
+│   │   ├── database.go      # Database configuration
+│   │   ├── jwt.go           # JWT configuration (optional)
+│   │   └── *_test.go        # Unit tests
 │   ├── handlers/
 │   │   ├── handler.go       # Handler struct and dependencies
 │   │   ├── health.go        # Health check endpoint
@@ -86,11 +91,15 @@ task run
 │   │   ├── repository.go    # Repository interface and DB setup
 │   │   ├── item.go          # Item repository implementation
 │   │   └── errors.go        # Repository errors
-│   └── routes/
-│       └── routes.go        # Route definitions
+│   ├── routes/
+│   │   └── routes.go        # Route definitions
+│   └── utils/
+│       ├── env.go           # Environment variable helpers
+│       └── env_test.go      # Unit tests
 ├── docs/                    # Swagger documentation (generated)
 ├── Dockerfile
 ├── Taskfile.yml
+├── TESTING.md               # Testing guide
 ├── go.mod
 └── README.md
 ```
@@ -154,18 +163,33 @@ task swagger
 
 Then access Swagger UI at `http://localhost:8080/swagger/index.html` (requires `SWAGGER_HOST` to be set).
 
+## Testing
+
+See [TESTING.md](TESTING.md) for testing guide.
+
+```bash
+# Run all tests
+task test
+
+# Run with coverage
+go test -cover ./...
+
+# Run specific tests
+go test -v -run TestNewDatabaseConfig ./internal/config/
+```
+
 ## Docker
 
 ### Build
 
 ```bash
-docker build -t your-service:latest .
+docker build -t template-api:latest .
 ```
 
 ### Run
 
 ```bash
-docker run --rm -p 8080:8080 --env-file .env your-service:latest
+docker run --rm -p 8080:8080 --env-file .env template-api:latest
 ```
 
 ## Customization

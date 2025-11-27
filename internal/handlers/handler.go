@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"github.com/your-org/your-service/internal/repository"
+	"github.com/GunarsK-templates/template-api/internal/repository"
 )
 
 // Handler holds dependencies for HTTP handlers

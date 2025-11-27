@@ -10,8 +10,8 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 
-	"github.com/your-org/your-service/internal/config"
-	"github.com/your-org/your-service/internal/models"
+	"github.com/GunarsK-templates/template-api/internal/config"
+	"github.com/GunarsK-templates/template-api/internal/models"
 )
 
 // Repository defines the interface for data access
@@ -37,7 +37,7 @@ func New(db *gorm.DB) Repository {
 func ConnectDB(cfg *config.Config) (*gorm.DB, error) {
 	// Configure GORM logger
 	gormLogLevel := logger.Silent
-	if cfg.Environment == "development" {
+	if cfg.Service.Environment == "development" {
 		gormLogLevel = logger.Info
 	}
 
@@ -45,7 +45,7 @@ func ConnectDB(cfg *config.Config) (*gorm.DB, error) {
 		Logger: logger.Default.LogMode(gormLogLevel),
 	}
 
-	db, err := gorm.Open(postgres.Open(cfg.DSN()), gormConfig)
+	db, err := gorm.Open(postgres.Open(cfg.Database.DSN()), gormConfig)
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to database: %w", err)
 	}

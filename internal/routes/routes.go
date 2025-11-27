@@ -5,16 +5,16 @@ import (
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 
-	"github.com/your-org/your-service/internal/config"
-	"github.com/your-org/your-service/internal/handlers"
-
-	_ "github.com/your-org/your-service/docs" // Swagger docs
+	"github.com/GunarsK-templates/template-api/internal/config"
+	"github.com/GunarsK-templates/template-api/internal/handlers"
+	// Uncomment after running: swag init -g cmd/api/main.go -o docs
+	// _ "github.com/GunarsK-templates/template-api/docs"
 )
 
 // Setup configures all routes for the service
 func Setup(router *gin.Engine, handler *handlers.Handler, cfg *config.Config) {
 	// CORS middleware
-	router.Use(corsMiddleware(cfg.AllowedOrigins))
+	router.Use(corsMiddleware(cfg.Service.AllowedOrigins))
 
 	// Security headers
 	router.Use(securityHeaders())
@@ -36,7 +36,7 @@ func Setup(router *gin.Engine, handler *handlers.Handler, cfg *config.Config) {
 		// Uncomment and add auth middleware when JWT is configured
 		// if cfg.HasJWT() {
 		//     protected := v1.Group("")
-		//     protected.Use(authMiddleware(cfg.JWTSecret))
+		//     protected.Use(authMiddleware(cfg.JWT.Secret))
 		//     {
 		//         protected.POST("/items", handler.CreateItem)
 		//         protected.PUT("/items/:id", handler.UpdateItem)
@@ -51,7 +51,7 @@ func Setup(router *gin.Engine, handler *handlers.Handler, cfg *config.Config) {
 	}
 
 	// Swagger documentation (only if host is configured)
-	if cfg.SwaggerHost != "" {
+	if cfg.Service.SwaggerHost != "" {
 		router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	}
 }

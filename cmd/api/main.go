@@ -13,10 +13,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
-	"github.com/your-org/your-service/internal/config"
-	"github.com/your-org/your-service/internal/handlers"
-	"github.com/your-org/your-service/internal/repository"
-	"github.com/your-org/your-service/internal/routes"
+	"github.com/GunarsK-templates/template-api/internal/config"
+	"github.com/GunarsK-templates/template-api/internal/handlers"
+	"github.com/GunarsK-templates/template-api/internal/repository"
+	"github.com/GunarsK-templates/template-api/internal/routes"
 )
 
 // @title           Your Service API
@@ -44,20 +44,20 @@ func main() {
 
 	// Setup logger
 	logLevel := slog.LevelInfo
-	if cfg.Environment == "development" {
+	if cfg.Service.Environment == "development" {
 		logLevel = slog.LevelDebug
 	}
 
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
 		Level:     logLevel,
-		AddSource: cfg.Environment == "development",
+		AddSource: cfg.Service.Environment == "development",
 	}))
 	slog.SetDefault(logger)
 
 	slog.Info("Starting service",
-		"service", cfg.ServiceName,
-		"environment", cfg.Environment,
-		"port", cfg.Port,
+		"service", cfg.Service.Name,
+		"environment", cfg.Service.Environment,
+		"port", cfg.Service.Port,
 	)
 
 	// Connect to database
@@ -74,7 +74,7 @@ func main() {
 	handler := handlers.New(repo)
 
 	// Setup Gin router
-	if cfg.Environment == "production" {
+	if cfg.Service.Environment == "production" {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
@@ -90,7 +90,7 @@ func main() {
 
 	// Create server
 	srv := &http.Server{
-		Addr:         fmt.Sprintf(":%s", cfg.Port),
+		Addr:         fmt.Sprintf(":%s", cfg.Service.Port),
 		Handler:      router,
 		ReadTimeout:  15 * time.Second,
 		WriteTimeout: 15 * time.Second,

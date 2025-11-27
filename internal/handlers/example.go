@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/GunarsK-templates/template-api/internal/models"
 	"github.com/gin-gonic/gin"
-	"github.com/your-org/your-service/internal/models"
 )
 
 // GetItems godoc

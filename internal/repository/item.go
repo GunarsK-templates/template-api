@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/your-org/your-service/internal/models"
+	"github.com/GunarsK-templates/template-api/internal/models"
 )
 
 // GetAllItems retrieves all items
