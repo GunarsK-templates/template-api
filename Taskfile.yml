@@ -1,0 +1,115 @@
+version: '3'
+
+vars:
+  SERVICE_NAME: your-service
+  BINARY_NAME: service
+
+tasks:
+  # Development
+  run:
+    desc: Run the service locally
+    cmds:
+      - go run cmd/api/main.go
+
+  build:
+    desc: Build the service binary
+    cmds:
+      - go build -o bin/{{.BINARY_NAME}} cmd/api/main.go
+
+  # Testing
+  test:
+    desc: Run all tests
+    cmds:
+      - go test -v ./...
+
+  test:coverage:
+    desc: Run tests with coverage
+    cmds:
+      - go test -v -race -coverprofile=coverage.out ./...
+      - go tool cover -html=coverage.out -o coverage.html
+
+  test:race:
+    desc: Run tests with race detector
+    cmds:
+      - go test -v -race ./...
+
+  # Code quality
+  lint:
+    desc: Run linter
+    cmds:
+      - golangci-lint run ./...
+
+  format:
+    desc: Format code
+    cmds:
+      - gofmt -s -w .
+
+  vet:
+    desc: Run go vet
+    cmds:
+      - go vet ./...
+
+  tidy:
+    desc: Tidy go modules
+    cmds:
+      - go mod tidy
+
+  # Security
+  security:scan:
+    desc: Run security scan with gosec
+    cmds:
+      - gosec -quiet ./...
+
+  security:vuln:
+    desc: Check for vulnerabilities
+    cmds:
+      - govulncheck ./...
+
+  # Swagger
+  swagger:
+    desc: Generate Swagger documentation
+    cmds:
+      - swag init -g cmd/api/main.go -o docs
+
+  # Docker
+  docker:build:
+    desc: Build Docker image
+    cmds:
+      - docker build -t {{.SERVICE_NAME}}:latest .
+
+  docker:run:
+    desc: Run Docker container
+    cmds:
+      - docker run --rm -p 8080:8080 --env-file .env {{.SERVICE_NAME}}:latest
+
+  docker:stop:
+    desc: Stop Docker container
+    cmds:
+      - docker stop {{.SERVICE_NAME}} || true
+
+  # CI - Run all checks
+  ci:all:
+    desc: Run all CI checks
+    cmds:
+      - task: tidy
+      - task: format
+      - task: vet
+      - task: lint
+      - task: test
+      - task: security:scan
+      - task: security:vuln
+
+  # Development tools installation
+  dev:install-tools:
+    desc: Install development tools
+    cmds:
+      - go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+      - go install github.com/securego/gosec/v2/cmd/gosec@latest
+      - go install golang.org/x/vuln/cmd/govulncheck@latest
+      - go install github.com/swaggo/swag/cmd/swag@latest
+
+  # Clean
+  clean:
+    desc: Clean build artifacts
+    cmds:
+      - rm -rf bin/ coverage.out coverage.html
