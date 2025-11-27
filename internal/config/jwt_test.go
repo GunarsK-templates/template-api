@@ -20,7 +20,8 @@ func clearAllJWTEnvVars(t *testing.T) {
 	t.Helper()
 	vars := []string{"JWT_SECRET", "JWT_ACCESS_EXPIRY", "JWT_REFRESH_EXPIRY"}
 	for _, v := range vars {
-		os.Unsetenv(v)
+		t.Setenv(v, "")
+		os.Unsetenv(v) //nolint:errcheck // test cleanup
 	}
 }
 

@@ -14,7 +14,8 @@ func clearAllServiceEnvVars(t *testing.T) {
 	t.Helper()
 	vars := []string{"SERVICE_NAME", "PORT", "ENVIRONMENT", "ALLOWED_ORIGINS", "SWAGGER_HOST"}
 	for _, v := range vars {
-		os.Unsetenv(v)
+		t.Setenv(v, "")
+		os.Unsetenv(v) //nolint:errcheck // test cleanup
 	}
 }
 

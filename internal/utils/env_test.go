@@ -13,14 +13,14 @@ import (
 // setEnvForTest sets an environment variable and registers cleanup.
 func setEnvForTest(t *testing.T, key, value string) {
 	t.Helper()
-	os.Setenv(key, value)
-	t.Cleanup(func() { os.Unsetenv(key) })
+	t.Setenv(key, value)
 }
 
 // clearEnvForTest ensures an environment variable is unset.
 func clearEnvForTest(t *testing.T, key string) {
 	t.Helper()
-	os.Unsetenv(key)
+	t.Setenv(key, "")
+	os.Unsetenv(key) //nolint:errcheck // test cleanup
 }
 
 // =============================================================================

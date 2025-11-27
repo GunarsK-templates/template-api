@@ -12,8 +12,7 @@ import (
 // setEnvForTest sets an environment variable and registers cleanup.
 func setEnvForTest(t *testing.T, key, value string) {
 	t.Helper()
-	os.Setenv(key, value)
-	t.Cleanup(func() { os.Unsetenv(key) })
+	t.Setenv(key, value)
 }
 
 // clearAllDatabaseEnvVars clears all database-related environment variables.
@@ -21,7 +20,8 @@ func clearAllDatabaseEnvVars(t *testing.T) {
 	t.Helper()
 	vars := []string{"DB_HOST", "DB_PORT", "DB_USER", "DB_PASSWORD", "DB_NAME", "DB_SSL_MODE"}
 	for _, v := range vars {
-		os.Unsetenv(v)
+		t.Setenv(v, "")
+		os.Unsetenv(v) //nolint:errcheck // test cleanup
 	}
 }
 
