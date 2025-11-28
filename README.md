@@ -25,29 +25,33 @@ A Go REST API template using Gin framework with PostgreSQL.
 ### Installation
 
 1. Clone the repository:
-```bash
-git clone https://github.com/GunarsK-templates/template-api.git
-cd template-api
-```
+
+   ```bash
+   git clone https://github.com/GunarsK-templates/template-api.git
+   cd template-api
+   ```
 
 2. Copy environment file:
-```bash
-cp .env.example .env
-```
+
+   ```bash
+   cp .env.example .env
+   ```
 
 3. Edit `.env` with your configuration
 
 4. Install dependencies:
-```bash
-go mod download
-```
+
+   ```bash
+   go mod download
+   ```
 
 5. Run the service:
-```bash
-go run cmd/api/main.go
-# or with Task
-task run
-```
+
+   ```bash
+   go run cmd/api/main.go
+   # or with Task
+   task run
+   ```
 
 ### Configuration
 
@@ -61,14 +65,14 @@ task run
 | `DB_USER` | Database user | - |
 | `DB_PASSWORD` | Database password | - |
 | `DB_NAME` | Database name | - |
-| `DB_SSL_MODE` | SSL mode (disable/require/verify-ca/verify-full) | `disable` |
+| `DB_SSL_MODE` | SSL mode | `disable` |
 | `JWT_SECRET` | JWT signing secret (optional) | - |
-| `ALLOWED_ORIGINS` | CORS allowed origins (comma-separated) | `http://localhost:3000` |
+| `ALLOWED_ORIGINS` | CORS allowed origins (comma-separated) | `localhost:3000` |
 | `SWAGGER_HOST` | Swagger host for docs | - |
 
 ## Project Structure
 
-```
+```text
 .
 ├── cmd/
 │   └── api/
@@ -130,38 +134,45 @@ task build
 # Run tests
 task test
 task test:coverage
-task test:race
 
 # Code quality
 task lint
 task format
 task vet
+task tidy
+task lint:markdown
 
 # Security
 task security:scan
 task security:vuln
 
 # Generate Swagger docs
-task swagger
+task dev:swagger
 
 # Docker
 task docker:build
 task docker:run
+task docker:stop
+task docker:logs
 
 # Run all CI checks
 task ci:all
 
 # Install dev tools
 task dev:install-tools
+
+# Clean build artifacts
+task clean
 ```
 
 ### Generating Swagger Documentation
 
 ```bash
-task swagger
+task dev:swagger
 ```
 
-Then access Swagger UI at `http://localhost:8080/swagger/index.html` (requires `SWAGGER_HOST` to be set).
+Then access Swagger UI at `http://localhost:8080/swagger/index.html`
+(requires `SWAGGER_HOST` to be set).
 
 ## Testing
 
@@ -197,42 +208,47 @@ docker run --rm -p 8080:8080 --env-file .env template-api:latest
 ### Adding a New Resource
 
 1. Create model in `internal/models/`:
-```go
-type MyResource struct {
-    ID        int64     `json:"id" gorm:"primaryKey"`
-    Name      string    `json:"name" gorm:"size:200;not null"`
-    CreatedAt time.Time `json:"created_at"`
-    UpdatedAt time.Time `json:"updated_at"`
-}
-```
+
+   ```go
+   type MyResource struct {
+       ID        int64     `json:"id" gorm:"primaryKey"`
+       Name      string    `json:"name" gorm:"size:200;not null"`
+       CreatedAt time.Time `json:"created_at"`
+       UpdatedAt time.Time `json:"updated_at"`
+   }
+   ```
 
 2. Add repository methods in `internal/repository/`:
-```go
-// In repository.go interface
-GetAllMyResources(ctx context.Context) ([]models.MyResource, error)
-// ... other methods
 
-// Create myresource.go with implementations
-```
+   ```go
+   // In repository.go interface
+   GetAllMyResources(ctx context.Context) ([]models.MyResource, error)
+   // ... other methods
+
+   // Create myresource.go with implementations
+   ```
 
 3. Add handlers in `internal/handlers/`:
-```go
-func (h *Handler) GetMyResources(c *gin.Context) { ... }
-```
+
+   ```go
+   func (h *Handler) GetMyResources(c *gin.Context) { ... }
+   ```
 
 4. Add routes in `internal/routes/routes.go`:
-```go
-myresources := v1.Group("/myresources")
-{
-    myresources.GET("", handler.GetMyResources)
-    // ...
-}
-```
+
+   ```go
+   myresources := v1.Group("/myresources")
+   {
+       myresources.GET("", handler.GetMyResources)
+       // ...
+   }
+   ```
 
 5. Regenerate Swagger docs:
-```bash
-task swagger
-```
+
+   ```bash
+   task swagger
+   ```
 
 ### Adding Authentication
 
